@@ -1,0 +1,9 @@
+CC = gcc
+CFLAGS = -g -D_MALLOC
+INCLUDE = -I$(SUPERLU_INC) -I../fftsvd
+FLAGS = -DMVTIME
+LDFLAGS = $(CFLAGS)
+LIBDIR =
+SUPERLU_INC = /usr/include/superlu
+SUPERLU_LIB = /usr/lib
+LIBS = -L$(SUPERLU_LIB) -lsuperlu_5.2.2 -llapack -lblas -lfftw3 -lfftw3f -lm
