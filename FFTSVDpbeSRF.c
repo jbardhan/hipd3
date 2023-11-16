@@ -1,5 +1,8 @@
 #include "FFTSVDpbeAPI.h"
 #include "PBEproblem.h"
+#include <stdio.h>
+#include <stdlib.h>
+
 
 // this file is a ripoff of getHessian, only all it does is compute a
 // single solvation energy.
@@ -38,8 +41,8 @@ int main(int argc, char* argv[]) {
   unsigned int i;
   real energy = 0.0;
    Matrix Hessian;
-   if (argc < 7) {
-      printf("Usage:\n\t%s <param> <siz> <boundCRG> <boundPDB> <boundSRF> doCoulomb? chainsToCharge\n", argv[0]);
+   if (argc < 8) {
+      printf("Usage:\n\t%s <param> <siz> <boundCRG> <boundPDB> <boundSRF> doCoulomb? chainsToCharge reactPotFile\n", argv[0]);
       exit(-1);
    }
    setlinebuf(stdout);
@@ -67,16 +70,27 @@ int main(int argc, char* argv[]) {
 	
    for (i = 0; i < problem->numpdbentries; i++) {
       problem->globalCharges[i] = problem->pdbentries[i].charge;
-	}
+   }
 	
-	PBEproblem_solve(problem);
+   PBEproblem_solve(problem);
 
+   FILE *fptr;
+   fptr = fopen(argv[8], "w");
+   if (fptr==NULL) {
+     printf("Error opening reactionPotentialFile!\n");
+     exit(1);
+   }
+   for (i=0; i < problem->numpdbentries; i++) {
+     fprintf(fptr,"%f\n",problem->globalPhiReact[i]);
+   }
+   fclose(fptr);
 /*    printf("reaction potentials = \n"); */
 	unsigned int j;
 	for (i = 0; i < problem->numpdbentries; i++)
 	  energy += problem->globalPhiReact[i] * problem->globalCharges[i] * .5; // .592 already accounted for
 	printf("total solvation energy = %f\n", energy);
 
+   exit(0);
 	real CoulombEnergy = 0.0;
 	Vector coulombPotential = Vector_allocate(problem->numpdbentries);
 	Vector3D* pointList = problem->qualocationoperator->charges->points;
