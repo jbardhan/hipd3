@@ -43,7 +43,7 @@ int main(int argc, char* argv[]) {
       exit(-1);
    }
    setlinebuf(stdout);
-   usequalocation = 1;
+   usequalocation = 0;
    // initialization of Tidor Lab data structures
    printf("Reading parameters from %s\n", argv[1]);
    readParams(argv[1]);
